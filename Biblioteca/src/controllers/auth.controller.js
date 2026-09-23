@@ -34,11 +34,11 @@ export const login = async (req, res) => {
     const { email, password } = req.body
 
     if (!email || !password) {
-        return res.status(400).json({ message: "faltan datos por llenar" })
+        return res.status(400).json({ mensaje: "faltan datos por llenar" })
     }
 
     if (typeof email !== "string" || typeof password !== "string") {
-        return res.status(400).json({ message: "email,password son datos de string" })
+        return res.status(400).json({ mensaje: "email,password son datos de string" })
     }
 
     const usuario = await prisma.usuario.findUnique({
@@ -46,17 +46,17 @@ export const login = async (req, res) => {
     })
 
     if (!usuario) {
-        return res.status(400).json({ message: "el usuario no existe" })
+        return res.status(400).json({ mensaje: "el usuario no existe" })
     }
 
     const contrasenaCorrecta = await bcrypt.compare(password, usuario.password)
 
     if (!contrasenaCorrecta) {
-        return res.status(400).json({ message: "contrasena incorrecta" })
+        return res.status(400).json({ mensaje: "contrasena incorrecta" })
     }
 
     const token = jwt.sign(
-        { id: usuario.id },
+        { id: usuario.id,rol:usuario.rol},
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
     )
